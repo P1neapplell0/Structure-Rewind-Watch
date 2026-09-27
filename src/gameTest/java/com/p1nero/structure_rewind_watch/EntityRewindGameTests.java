@@ -120,6 +120,7 @@ public class EntityRewindGameTests {
             helper.assertTrue(level.getEntitiesOfClass(ArmorStand.class, AABB.of(box)).size() == 2, "Both entities return to their original slots");
             helper.assertTrue(!unrelated.isRemoved(), "Unrelated neighbor still intact");
             helper.assertTrue(piece.placeSettings().isIgnoreEntities(), "Shared template settings not mutated");
+            restored.forEach(net.minecraft.world.entity.Entity::discard);
             player.getServer().getPlayerList().deop(player.getGameProfile());
             player.getServer().getPlayerList().remove(player);
             forced.forEach(pos -> level.setChunkForced(pos.x, pos.z, false));
