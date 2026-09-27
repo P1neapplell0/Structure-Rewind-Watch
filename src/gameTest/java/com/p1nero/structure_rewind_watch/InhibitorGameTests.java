@@ -6,9 +6,9 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.PushReaction;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(StructureRewindWatchMod.MODID)
 @PrefixGameTestTemplate(false)
@@ -16,7 +16,7 @@ public final class InhibitorGameTests {
     @GameTest(template = "empty", batch = "inhibitor", timeoutTicks = 180)
     public static void rangeOwnershipAndExpiry(GameTestHelper helper) {
         var level = helper.getLevel();
-        var player = helper.makeMockServerPlayerInLevel();
+        var player = TestPlayers.create(level);
         player.setNoGravity(true);
         BlockPos pos = helper.absolutePos(new BlockPos(0, 8, 0));
         int radius = Config.INHIBITOR_RADIUS.get();
@@ -33,9 +33,9 @@ public final class InhibitorGameTests {
         player.teleportTo(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
         inhibitor.announce();
         helper.assertTrue(InhibitorProtection.mayBreak(player, level, pos), "Placer may break");
-        var data = inhibitor.saveWithoutMetadata(level.registryAccess());
+        var data = inhibitor.saveWithoutMetadata();
         var copy = new RewindInhibitorBlockEntity(pos, inhibitor.getBlockState());
-        copy.loadWithComponents(data, level.registryAccess());
+        copy.load(data);
         helper.assertTrue(player.getUUID().equals(copy.getOwner()), "Owner survives NBT save/load");
         inhibitor.setOwner(java.util.UUID.randomUUID());
         var denied = new BlockEvent.BreakEvent(level, pos, inhibitor.getBlockState(), player);

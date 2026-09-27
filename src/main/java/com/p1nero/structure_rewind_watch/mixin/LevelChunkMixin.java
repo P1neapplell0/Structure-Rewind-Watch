@@ -21,7 +21,7 @@ public abstract class LevelChunkMixin {
 
     // Vanilla inherits this method. Other mods may add an override to LevelChunk.
     // Inject into that override when present, without adding/replacing any method.
-    @Inject(method = "markPosForPostprocessing", at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(method = "markPosForPostprocessing(Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true, require = 0)
     private void rewind$markExistingOverride(BlockPos pos, CallbackInfo ci) {
         if (RewindManager.queuePostprocessing((ChunkAccess) (Object) this, pos)) ci.cancel();
     }

@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+[[mods]]
+modId="structure_rewind_watch"
+version="${mod_version}"
+displayName="Structure Rewind Watch"
+authors="P1nero"
+description='''Rewind the clock; restore the structure. A watch, a golden clock animation, and ownership-protected rewind inhibitors.'''
+[[dependencies.structure_rewind_watch]]
+modId="forge"
+mandatory=true
+versionRange="[47.4.0,48)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.structure_rewind_watch]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.20.2)"
+ordering="NONE"
+side="BOTH"

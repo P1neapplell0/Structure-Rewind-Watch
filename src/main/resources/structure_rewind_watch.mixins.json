@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.p1nero.structure_rewind_watch.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "TemplatePieceMixin",
     "LevelChunkMixin",
@@ -18,5 +18,6 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "refmap": "structure_rewind_watch.refmap.json"
 }

@@ -14,7 +14,7 @@ public class RewindWatchItem extends Item {
     public RewindWatchItem(Properties properties) { super(properties); }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, net.minecraft.world.level.Level level, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.translatable("tooltip.structure_rewind_watch.watch").withStyle(ChatFormatting.GOLD));
     }
 

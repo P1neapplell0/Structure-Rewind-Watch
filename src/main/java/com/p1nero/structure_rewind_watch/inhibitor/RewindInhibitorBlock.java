@@ -1,6 +1,5 @@
 package com.p1nero.structure_rewind_watch.inhibitor;
 
-import com.mojang.serialization.MapCodec;
 import com.p1nero.structure_rewind_watch.StructureRewindWatchMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -15,10 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 
 public final class RewindInhibitorBlock extends BaseEntityBlock {
-    public static final MapCodec<RewindInhibitorBlock> CODEC = simpleCodec(RewindInhibitorBlock::new);
     public RewindInhibitorBlock(Properties properties) { super(properties); }
-    @Override protected MapCodec<RewindInhibitorBlock> codec() { return CODEC; }
-    @Override protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
+    @Override public RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
     @Override public BlockEntity newBlockEntity(BlockPos pos, BlockState state) { return new RewindInhibitorBlockEntity(pos, state); }
     @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide ? null : createTickerHelper(type, StructureRewindWatchMod.INHIBITOR_ENTITY.get(), RewindInhibitorBlockEntity::serverTick);

@@ -3,7 +3,6 @@ package com.p1nero.structure_rewind_watch.inhibitor;
 import com.p1nero.structure_rewind_watch.Config;
 import com.p1nero.structure_rewind_watch.StructureRewindWatchMod;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -19,12 +18,12 @@ public final class RewindInhibitorBlockEntity extends BlockEntity {
     }
     public UUID getOwner() { return owner; }
     public void setOwner(UUID owner) { this.owner = owner; setChanged(); }
-    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    @Override protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         if (owner != null) tag.putUUID("Owner", owner);
     }
-    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    @Override public void load(CompoundTag tag) {
+        super.load(tag);
         owner = tag.hasUUID("Owner") ? tag.getUUID("Owner") : null;
     }
     public static void serverTick(Level level, BlockPos pos, BlockState state, RewindInhibitorBlockEntity inhibitor) {

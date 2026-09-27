@@ -9,8 +9,8 @@ import java.util.List;
 
 public final class RewindInhibitorItem extends BlockItem {
     public RewindInhibitorItem(Block block, Properties properties) { super(block, properties); }
-    @Override public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
-        super.appendHoverText(stack, context, lines, flag);
+    @Override public void appendHoverText(ItemStack stack, net.minecraft.world.level.Level level, List<Component> lines, TooltipFlag flag) {
+        super.appendHoverText(stack, level, lines, flag);
         if (Config.SPEC.isLoaded()) {
             lines.add(Component.translatable("tooltip.structure_rewind_watch.inhibitor_range", Config.INHIBITOR_RADIUS.get()).withStyle(ChatFormatting.GOLD));
         } else {

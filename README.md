@@ -1,6 +1,6 @@
 # 结构回溯怀表 / Structure Rewind Watch
 
-作者：**P1nero**。Minecraft **1.21.1**，NeoForge **21.1.248+（21.1.x）**，Java **21**。服务端和客户端都安装本模组。
+作者：**P1nero**。Minecraft **1.20.1**，Forge **47.4.0+（47.x）**，Java **17**。服务端和客户端都安装本模组。
 
 手持怀表右键，选择玩家所在结构或距离其包围盒不超过 10 格的最近允许结构。播放约 5 秒的金白钟盘、逆转双指针、环形辉光、星点与音效，随后在黑屏下分批恢复结构；服务器完成后发送结束消息，画面渐隐。默认距离结构 64 格内的玩家一同观看。
 
@@ -16,7 +16,7 @@
 
 ## 配置
 
-首次运行服务器或进入单人存档后生成 `config/structure_rewind_watch-server.toml`（NeoForge SERVER 配置；实际位置也会在日志中打印）。示例见 [examples/structure_rewind_watch-server.toml](examples/structure_rewind_watch-server.toml)。
+首次运行服务器或进入单人存档后生成 `<存档>/serverconfig/structure_rewind_watch-server.toml`（Forge SERVER 配置；可在 defaultconfigs 中设置新存档默认值）。示例见 [examples/structure_rewind_watch-server.toml](examples/structure_rewind_watch-server.toml)。
 
 | 配置项 | 默认值 | 含义 |
 | --- | --- | --- |
@@ -55,7 +55,7 @@ structureBlacklist = ["minecraft:(stronghold|fortress)"]
 ./gradlew runClient
 ```
 
-输出：`build/libs/structure_rewind_watch-neoforge1.21.1-1.0.0.jar`。
+输出：`build/libs/structure_rewind_watch-forge1.20.1-1.0.0.jar`。
 
 开发专用 GameTest 位于 `src/gameTest`，不会打包进发布 jar。测试覆盖：三维搜索距离与边界、正则名单优先级和无效表达式、神殿方块恢复、动画前不提前恢复、地下宝箱战利品重置、普通玩家冷却以及 OP 再次回溯。
 
@@ -108,6 +108,6 @@ structureBlacklist = ["minecraft:(stronghold|fortress)"]
 
 开发期间的 1.0.1、1.0.2、1.1.0 编号属于未发布测试构建；正式发布统一为 1.0.0。发布文案见 [docs/模组介绍.md](docs/模组介绍.md)。
 
-本分支对应 NeoForge 1.21.1，`1.20.1` 分支对应 Forge 47.4.0 / Minecraft 1.20.1。文件名含加载器及游戏版本。
+本分支 `1.20.1` 对应 Forge 47.4.0 / Minecraft 1.20.1，`main` 分支对应 NeoForge 1.21.1。文件名含加载器及游戏版本。
 
 修正指针 5 秒后停转；动画改为客户端游戏 tick 计时，单人暂停时冻结。播放期间取消常规 HUD，并在 GUI 绘制末尾清理深度后绘制特效；暂停菜单保持可操作。绕过正常渲染流程的第三方 HUD 仍可能需要兼容适配。

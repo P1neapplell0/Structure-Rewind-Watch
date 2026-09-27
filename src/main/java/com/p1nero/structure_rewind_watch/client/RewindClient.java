@@ -7,12 +7,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.event.RenderGuiEvent;
 
-@Mod(value = StructureRewindWatchMod.MODID, dist = Dist.CLIENT)
 public final class RewindClient {
     private static long sequence;
     private static final RewindTimeline TIMELINE = new RewindTimeline();
@@ -20,19 +19,21 @@ public final class RewindClient {
     private static int lastBeat;
     private static final String[] NUMERALS = {"XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"};
 
-    public RewindClient(net.neoforged.bus.api.IEventBus bus) {
-        bus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) ->
+    public static void register() {
+        var bus = net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener((net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) ->
                 event.registerBlockEntityRenderer(StructureRewindWatchMod.INHIBITOR_ENTITY.get(), InhibitorRenderer::new));
         RewindPayload.receiver = RewindClient::receive;
-        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ClientTickEvent.Post event) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent event) -> {
+            if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null || mc.player == null) active = false;
             if (active) TIMELINE.tick(mc.isPaused());
         });
-        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST, false,
+        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.HIGHEST, false,
                 RenderGuiEvent.Pre.class, event -> { if (isActive()) event.setCanceled(true); });
-        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST, false,
-                net.neoforged.neoforge.client.event.RenderGuiLayerEvent.Pre.class,
+        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.HIGHEST, false,
+                net.minecraftforge.client.event.RenderGuiOverlayEvent.Pre.class,
                 event -> { if (isActive()) event.setCanceled(true); });
     }
 
@@ -43,7 +44,7 @@ public final class RewindClient {
             lastBeat = -1; active = true;
             if (mc.player != null) mc.player.playSound(SoundEvents.BEACON_ACTIVATE, 0.7f, 0.65f);
         } else if (active && sequence == payload.sequence()) {
-            TIMELINE.finish(mc.getTimer().getGameTimeDeltaPartialTick(false)); success = payload.phase() == 1;
+            TIMELINE.finish(mc.getFrameTime()); success = payload.phase() == 1;
             if (mc.player != null) mc.player.playSound(success ? SoundEvents.AMETHYST_BLOCK_RESONATE : SoundEvents.BEACON_DEACTIVATE, 0.8f, 0.65f);
         }
     }

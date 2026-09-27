@@ -23,15 +23,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class StructurePieceMixin {
     @Shadow protected abstract BlockPos.MutableBlockPos getWorldPos(int x, int y, int z);
 
-    @Inject(method = "createChest(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/world/level/block/state/BlockState;)Z", at = @At("HEAD"))
+    @Inject(method = "createChest(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/world/level/block/state/BlockState;)Z", at = @At("HEAD"))
     private void rewind$chest(ServerLevelAccessor level, BoundingBox box, RandomSource random, BlockPos pos,
-                              ResourceKey<LootTable> loot, BlockState state, CallbackInfoReturnable<Boolean> ci) {
+                              net.minecraft.resources.ResourceLocation loot, BlockState state, CallbackInfoReturnable<Boolean> ci) {
         rewind$clear(level, box, pos);
     }
 
     @Inject(method = "createDispenser", at = @At("HEAD"))
     private void rewind$dispenser(WorldGenLevel level, BoundingBox box, RandomSource random, int x, int y, int z,
-                                  Direction facing, ResourceKey<LootTable> loot, CallbackInfoReturnable<Boolean> ci) {
+                                  Direction facing, net.minecraft.resources.ResourceLocation loot, CallbackInfoReturnable<Boolean> ci) {
         rewind$clear(level, box, getWorldPos(x, y, z));
     }
 

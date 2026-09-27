@@ -12,8 +12,8 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.structures.DesertPyramidPiece;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import java.util.List;
 
 @GameTestHolder(StructureRewindWatchMod.MODID)
@@ -65,7 +65,7 @@ public class RewindGameTests {
     public static void restoresPyramid(GameTestHelper helper) {
         var level = helper.getLevel();
         BlockPos origin = helper.absolutePos(new BlockPos(64, 0, 64));
-        var structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.withDefaultNamespace("desert_pyramid"));
+        var structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(new ResourceLocation("desert_pyramid"));
         var piece = new DesertPyramidPiece(RandomSource.create(42), origin.getX(), origin.getZ());
         ChunkPos startPos = new ChunkPos(origin);
         var start = new StructureStart(structure, startPos, 0, new PiecesContainer(List.of(piece)));
@@ -86,7 +86,7 @@ public class RewindGameTests {
             for (var entry : level.getChunk(pos.x, pos.z).getBlockEntities().entrySet()) {
                 if (entry.getValue() instanceof net.minecraft.world.level.block.entity.ChestBlockEntity chest) {
                     chests.add(entry.getKey().immutable());
-                    chest.setLootTable(null); chest.clearContent();
+                    chest.setLootTable(null, 0L); chest.clearContent();
                     chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND));
                 }
             }
@@ -97,7 +97,7 @@ public class RewindGameTests {
         var pinned = ChunkPos.rangeClosed(new ChunkPos((box.minX() - 16) >> 4, (box.minZ() - 16) >> 4),
                 new ChunkPos((box.maxX() + 16) >> 4, (box.maxZ() + 16) >> 4)).toList();
         pinned.forEach(pos -> level.setChunkForced(pos.x, pos.z, true));
-        var player = helper.makeMockServerPlayerInLevel();
+        var player = TestPlayers.create(level);
         player.setNoGravity(true);
         player.teleportTo(box.getCenter().getX(), box.getCenter().getY(), box.getCenter().getZ());
         RewindManager.begin(player);
@@ -109,7 +109,7 @@ public class RewindGameTests {
             helper.assertTrue(player.getCooldowns().isOnCooldown(StructureRewindWatchMod.WATCH.get()), "Cooldown starts after completion");
             for (BlockPos pos : chests) {
                 var chest = (net.minecraft.world.level.block.entity.ChestBlockEntity) level.getBlockEntity(pos);
-                helper.assertTrue(chest != null && chest.getLootTable() != null, "Loot tables restored, including underground chests");
+                helper.assertTrue(chest != null && chest.saveWithoutMetadata().contains("LootTable"), "Loot tables restored, including underground chests");
             }
             level.setBlockAndUpdate(damaged, Blocks.AIR.defaultBlockState());
             RewindManager.begin(player); // Must be rejected by the active vanilla cooldown.

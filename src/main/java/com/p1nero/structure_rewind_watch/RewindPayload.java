@@ -1,20 +1,25 @@
 package com.p1nero.structure_rewind_watch;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
-public record RewindPayload(int phase, long sequence) implements CustomPacketPayload {
-    public static final Type<RewindPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(StructureRewindWatchMod.MODID, "rewind"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, RewindPayload> CODEC = StreamCodec.of(
-            (buf, value) -> { buf.writeVarInt(value.phase); buf.writeLong(value.sequence); },
-            buf -> new RewindPayload(buf.readVarInt(), buf.readLong()));
-    // Client installs this callback in its own entry point; dedicated servers never load rendering classes.
+public record RewindPayload(int phase, long sequence) {
+    private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(StructureRewindWatchMod.MODID, "rewind"), () -> "1", "1"::equals, "1"::equals);
     public static java.util.function.Consumer<RewindPayload> receiver = payload -> {};
-    @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
-    public static void register(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").playToClient(TYPE, CODEC, (payload, context) -> context.enqueueWork(() -> receiver.accept(payload)));
+    public static void register() {
+        CHANNEL.messageBuilder(RewindPayload.class, 0, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((payload, buf) -> { buf.writeVarInt(payload.phase); buf.writeLong(payload.sequence); })
+                .decoder(buf -> new RewindPayload(buf.readVarInt(), buf.readLong()))
+                .consumerMainThread((payload, context) -> receiver.accept(payload))
+                .add();
+    }
+    public static void send(ServerPlayer player, RewindPayload payload) {
+        if (CHANNEL.isRemotePresent(player.connection.connection)) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), payload);
     }
 }

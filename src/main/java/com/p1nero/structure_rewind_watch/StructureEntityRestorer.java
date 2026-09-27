@@ -9,7 +9,7 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import java.util.*;
 
 /** Per-rewind entity slots, independent of unrelated creatures of the same type nearby. */
@@ -33,7 +33,7 @@ final class StructureEntityRestorer {
     void onSpawn(EntityJoinLevelEvent event) {
         Entity incoming = event.getEntity();
         if (protectedEntity(incoming)) return;
-        String position = incoming.getType().builtInRegistryHolder().key().location() + "/"
+        String position = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(incoming.getType()) + "/"
                 + Math.round(incoming.getX() * 16) + "/" + Math.round(incoming.getY() * 16) + "/" + Math.round(incoming.getZ() * 16);
         String slot = position + "/" + (occurrences.merge(position, 1, Integer::sum) - 1);
         var nearby = level.getEntitiesOfClass(Entity.class, area,

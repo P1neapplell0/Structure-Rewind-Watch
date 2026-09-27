@@ -3,8 +3,8 @@ package com.p1nero.structure_rewind_watch;
 import com.p1nero.structure_rewind_watch.client.RewindTimeline;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(StructureRewindWatchMod.MODID)
 @PrefixGameTestTemplate(false)

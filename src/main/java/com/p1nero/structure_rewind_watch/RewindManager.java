@@ -14,11 +14,12 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.*;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.network.PacketDistributor;
 import java.util.*;
 
 public final class RewindManager {
@@ -98,8 +99,7 @@ public final class RewindManager {
             for (ServerPlayer viewer : level.players()) {
                 if (viewer == player || distanceSquared(viewer.blockPosition(), box) <= Math.pow(Config.EFFECT_RADIUS.get(), 2)) {
                     job.viewers.add(viewer.getUUID());
-                    if (viewer.connection.hasChannel(RewindPayload.TYPE))
-                        PacketDistributor.sendToPlayer(viewer, new RewindPayload(0, job.sequence));
+                    RewindPayload.send(viewer, new RewindPayload(0, job.sequence));
                 }
             }
             message(player, "started");
@@ -117,9 +117,10 @@ public final class RewindManager {
     }
 
     @SubscribeEvent
-    public static void tick(ServerTickEvent.Post event) {
+    public static void tick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         // Vanilla checks cooldown before calling Item.use, so clear stale cooldowns after an OP promotion.
-        for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
             if (player.hasPermissions(2) && player.getCooldowns().isOnCooldown(StructureRewindWatchMod.WATCH.get()))
                 player.getCooldowns().removeCooldown(StructureRewindWatchMod.WATCH.get());
         }
@@ -201,12 +202,12 @@ public final class RewindManager {
         }
         for (UUID id : active.viewers) {
             ServerPlayer viewer = active.level.getServer().getPlayerList().getPlayer(id);
-            if (viewer != null && viewer.connection.hasChannel(RewindPayload.TYPE)) PacketDistributor.sendToPlayer(viewer, new RewindPayload(success ? 1 : 2, active.sequence));
+            if (viewer != null) RewindPayload.send(viewer, new RewindPayload(success ? 1 : 2, active.sequence));
         }
         job = null;
     }
 
-    @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
     public static void entityJoin(EntityJoinLevelEvent event) {
         if (!isPlacing() || event.getLevel() != job.level || event.loadedFromDisk()) return;
         job.entities.onSpawn(event);

@@ -15,8 +15,8 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.structures.EndCityPieces;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import java.util.List;
 
 @GameTestHolder(StructureRewindWatchMod.MODID)
@@ -29,7 +29,7 @@ public class EntityRewindGameTests {
         ChunkPos chunk = new ChunkPos(pos);
         level.setChunkForced(chunk.x, chunk.z, true);
         helper.runAfterDelay(20, () -> {
-            var type = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.withDefaultNamespace("end_city"));
+            var type = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(new ResourceLocation("end_city"));
             var piece = new net.minecraft.world.level.levelgen.structure.structures.DesertPyramidPiece(RandomSource.create(0), pos.getX(), pos.getZ());
             piece.move(0, pos.getY() - 64, 0);
             var start = new StructureStart(type, chunk, 0, new PiecesContainer(List.of(piece)));
@@ -40,7 +40,7 @@ public class EntityRewindGameTests {
             level.addFreshEntity(pet);
             var replacementPet = EntityType.WOLF.create(level);
             replacementPet.setPos(pet.position());
-            var petEvent = new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(replacementPet, level);
+            var petEvent = new net.minecraftforge.event.entity.EntityJoinLevelEvent(replacementPet, level);
             var restorer = new StructureEntityRestorer(level, start);
             restorer.onSpawn(petEvent);
             helper.assertTrue(petEvent.isCanceled() && !pet.isRemoved(), "Owned pet is preserved without duplication");
@@ -48,14 +48,14 @@ public class EntityRewindGameTests {
             var old = new ArmorStand(level, pos.getX() + 1, pos.getY(), pos.getZ() + 1);
             old.setNoGravity(true); level.addFreshEntity(old);
             var incoming = new ArmorStand(level, old.getX(), old.getY(), old.getZ());
-            var event = new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(incoming, level);
+            var event = new net.minecraftforge.event.entity.EntityJoinLevelEvent(incoming, level);
             restorer.onSpawn(event);
             restorer.commitReplacements(); // Simulate a later mod rejecting the new spawn.
             helper.assertTrue(!old.isRemoved(), "Rejected replacement must not delete existing entity");
             try {
                 Config.RESET_EXISTING_ENTITIES.set(false);
                 var keep = new StructureEntityRestorer(level, start);
-                var keepEvent = new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(new ArmorStand(level, old.getX(), old.getY(), old.getZ()), level);
+                var keepEvent = new net.minecraftforge.event.entity.EntityJoinLevelEvent(new ArmorStand(level, old.getX(), old.getY(), old.getZ()), level);
                 keep.onSpawn(keepEvent);
                 helper.assertTrue(keepEvent.isCanceled() && !old.isRemoved(), "Missing-only mode preserves existing entities");
             } finally { Config.RESET_EXISTING_ENTITIES.set(true); }
@@ -69,8 +69,8 @@ public class EntityRewindGameTests {
     public static void restoresTemplateEntities(GameTestHelper helper) throws Exception {
         var level = helper.getLevel();
         var manager = level.getStructureManager();
-        var template = manager.getOrCreate(ResourceLocation.withDefaultNamespace("end_city/rewind_entity_test"));
-        template.load(level.holderLookup(Registries.BLOCK), TagParser.parseTag("""
+        var template = manager.getOrCreate(new ResourceLocation("end_city/rewind_entity_test"));
+        template.load(level.registryAccess().lookupOrThrow(Registries.BLOCK), TagParser.parseTag("""
             {size:[5,4,5],palette:[{Name:"minecraft:stone"}],blocks:[{pos:[0,0,0],state:0}],entities:[
               {pos:[1.5d,1.0d,1.5d],blockPos:[1,1,1],nbt:{id:"minecraft:armor_stand",NoGravity:1b,Marker:1b}},
               {pos:[3.5d,1.0d,3.5d],blockPos:[3,1,3],nbt:{id:"minecraft:armor_stand",NoGravity:1b,Marker:1b}}
@@ -79,7 +79,7 @@ public class EntityRewindGameTests {
         BlockPos base = helper.absolutePos(new BlockPos(256, 0, 256));
         BlockPos origin = new BlockPos(base.getX(), 80, base.getZ());
         var piece = new EndCityPieces.EndCityPiece(manager, "rewind_entity_test", origin, Rotation.NONE, true);
-        var structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.withDefaultNamespace("end_city"));
+        var structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(new ResourceLocation("end_city"));
         var start = new StructureStart(structure, new ChunkPos(origin), 0, new PiecesContainer(List.of(piece)));
         var box = start.getBoundingBox();
         start.placeInChunk(level, level.structureManager(), level.getChunkSource().getGenerator(), RandomSource.create(0), box, new ChunkPos(origin));
@@ -97,7 +97,7 @@ public class EntityRewindGameTests {
         level.addFreshEntity(original);
         var unrelated = new ArmorStand(level, origin.getX() + 8.5, 81, origin.getZ() + 1.5);
         unrelated.setNoGravity(true); level.addFreshEntity(unrelated);
-        var player = helper.makeMockServerPlayerInLevel();
+        var player = TestPlayers.create(level);
         player.setNoGravity(true);
         player.getServer().getPlayerList().getOps().add(new net.minecraft.server.players.ServerOpListEntry(player.getGameProfile(), 2, false));
         player.teleportTo(origin.getX() + 2, 82, origin.getZ() + 2);
@@ -120,6 +120,7 @@ public class EntityRewindGameTests {
             helper.assertTrue(level.getEntitiesOfClass(ArmorStand.class, AABB.of(box)).size() == 2, "Both entities return to their original slots");
             helper.assertTrue(!unrelated.isRemoved(), "Unrelated neighbor still intact");
             helper.assertTrue(piece.placeSettings().isIgnoreEntities(), "Shared template settings not mutated");
+            restored.forEach(net.minecraft.world.entity.Entity::discard);
             player.getServer().getPlayerList().deop(player.getGameProfile());
             player.getServer().getPlayerList().remove(player);
             forced.forEach(pos -> level.setChunkForced(pos.x, pos.z, false));
