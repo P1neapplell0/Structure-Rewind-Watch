@@ -1,0 +1,32 @@
+#Cooldown in seconds / 冷却秒数；OP level 2+ bypasses cooldown.
+# Default: 1200
+# Range: 0 ~ 107374182
+cooldownSeconds = 1200
+#Distance in blocks from player to structure bounding box / 结构搜索距离（格）
+# Default: 10
+# Range: 0 ~ 128
+searchRadius = 10
+#Players within this distance of the structure see the transition / 特效影响范围（格）
+# Default: 64
+# Range: 0 ~ 512
+effectRadius = 64
+#Structure chunks placed per server tick / 每 tick 重置区块数
+# Default: 1
+# Range: 1 ~ 16
+chunksPerTick = 1
+#Reject structures larger than this chunk count / 最大结构区块数
+# Default: 1024
+# Range: 1 ~ 16384
+maxStructureChunks = 1024
+#Full-match Java regex of structure IDs. Empty allows all. / 白名单，空为全部允许。例如 minecraft:.*
+structureWhitelist = []
+#Full-match Java regex. Blacklist takes priority. / 黑名单优先，例如 minecraft:(stronghold|fortress)
+structureBlacklist = []
+
+#回溯时恢复结构模板中保存的实体
+restoreTemplateEntities = true
+#重置匹配的结构实体；false 仅补充缺失实体。玩家及已驯服/有主生物受保护。
+resetExistingStructureEntities = true
+
+#回溯抑制器半径（格），三维距离；摆放者和管理员同样受限。范围 1–512。
+inhibitorRadius = 100

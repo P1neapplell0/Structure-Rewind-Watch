@@ -1,0 +1,6 @@
+{
+  "required": true,
+  "package": "com.p1nero.structure_rewind_watch.compat",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["ExistingLevelChunkOverride"]
+}

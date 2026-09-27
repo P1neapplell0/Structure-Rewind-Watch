@@ -1,0 +1,21 @@
+{
+  "item.structure_rewind_watch.structure_rewind_watch": "结构回溯怀表",
+  "tooltip.structure_rewind_watch.watch": "拨回表针，令此地结构恢复如初。",
+  "message.structure_rewind_watch.started": "时光倒流，结构正在回溯……",
+  "message.structure_rewind_watch.complete": "结构已恢复如初。",
+  "message.structure_rewind_watch.failed": "回溯失败，请查看服务器日志。",
+  "message.structure_rewind_watch.busy": "已有结构正在回溯，请稍候。",
+  "message.structure_rewind_watch.no_structure": "附近没有允许回溯的结构。",
+  "message.structure_rewind_watch.too_large": "此结构超出配置的大小限制。",
+  "effect.structure_rewind_watch.title": "时 · 光 · 回 · 溯",
+  "effect.structure_rewind_watch.restoring": "正在重塑往昔……",
+  "effect.structure_rewind_watch.complete": "万象归初",
+  "effect.structure_rewind_watch.failed": "时间重新流动",
+  "block.structure_rewind_watch.rewind_inhibitor": "回溯抑制器",
+  "tooltip.structure_rewind_watch.inhibitor_range": "禁止 %s 格内的玩家使用结构回溯怀表（包括摆放者与管理员）。",
+  "tooltip.structure_rewind_watch.inhibitor_default": "禁止附近玩家使用怀表。默认半径 100 格，可由服务器配置。",
+  "tooltip.structure_rewind_watch.inhibitor_owner": "仅摆放者或服务器管理员（权限等级 2+）可拆除。",
+  "tooltip.structure_rewind_watch.inhibitor_tick": "在区块运行时生效，每秒检测；防爆且不可被活塞推动。",
+  "message.structure_rewind_watch.inhibited": "附近的回溯抑制器阻止了怀表回溯时间。",
+  "message.structure_rewind_watch.inhibitor_owner_only": "只有摆放者或服务器管理员可以拆除此抑制器。"
+}

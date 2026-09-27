@@ -1,0 +1,21 @@
+{
+  "item.structure_rewind_watch.structure_rewind_watch": "Structure Rewind Watch",
+  "tooltip.structure_rewind_watch.watch": "Rewind the clock; restore the structure.",
+  "message.structure_rewind_watch.started": "Time rewinds; the structure is being restored...",
+  "message.structure_rewind_watch.complete": "The structure has been restored.",
+  "message.structure_rewind_watch.failed": "Rewind failed. See the server log for details.",
+  "message.structure_rewind_watch.busy": "A structure is already being restored.",
+  "message.structure_rewind_watch.no_structure": "No permitted structure nearby.",
+  "message.structure_rewind_watch.too_large": "This structure exceeds the configured size limit.",
+  "effect.structure_rewind_watch.title": "T I M E   R E W I N D S",
+  "effect.structure_rewind_watch.restoring": "Restoring the structure…",
+  "effect.structure_rewind_watch.complete": "AS IT ONCE WAS",
+  "effect.structure_rewind_watch.failed": "The passage of time resumes",
+  "block.structure_rewind_watch.rewind_inhibitor": "Rewind Inhibitor",
+  "tooltip.structure_rewind_watch.inhibitor_range": "Blocks Structure Rewind Watch use within %s blocks (including owner and operators).",
+  "tooltip.structure_rewind_watch.inhibitor_default": "Blocks watch use nearby. Default radius: 100 blocks; server configurable.",
+  "tooltip.structure_rewind_watch.inhibitor_owner": "Only the placer or an operator (level 2+) can break this block.",
+  "tooltip.structure_rewind_watch.inhibitor_tick": "Active while ticking; checks every second. Blast-proof and immovable by pistons.",
+  "message.structure_rewind_watch.inhibited": "A nearby Rewind Inhibitor prevents the watch from rewinding time.",
+  "message.structure_rewind_watch.inhibitor_owner_only": "Only the placer or a server operator can break this inhibitor."
+}
